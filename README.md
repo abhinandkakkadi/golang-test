@@ -1,0 +1,2 @@
+# Coverage Badge
+![](badge.svg)
