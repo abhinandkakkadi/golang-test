@@ -1,0 +1,4 @@
+mode: count
+test-go/main.go:5.13,9.2 3 0
+test-go/main.go:11.24,13.2 1 1
+test-go/main.go:15.24,17.2 1 1
