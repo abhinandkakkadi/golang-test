@@ -1,2 +1,1 @@
 # Coverage Badge
-\![](badge.svg)
