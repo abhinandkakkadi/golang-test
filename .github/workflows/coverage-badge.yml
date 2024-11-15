@@ -29,7 +29,7 @@ jobs:
         run: |
           mkdir -p coverage-badge
           echo "# Coverage Badge" > coverage-badge/README.md
-          COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print substr($3, 1, length($3)-1)}')
+          COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print "Coverage: "$3}' )
           COVERAGE_NUMBER=$(echo $COVERAGE | awk '{print int($1)}')
 
           if [ "$COVERAGE_NUMBER" -ge 80 ]; then
