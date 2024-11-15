@@ -1,2 +1,2 @@
 # Coverage Badge
-![](badge.svg)
+Coverage: 40.0%
