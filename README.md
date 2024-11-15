@@ -1,3 +1,3 @@
 # golang-test
 
-![Coverage](https://github.io/abhinandkakkadi/golang-test/coverage-badge/badge.svg)
+![Coverage](https://abhinandkakkadi.github.io/golang-test/coverage-badge/badge.svg)

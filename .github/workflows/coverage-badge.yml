@@ -30,7 +30,7 @@ jobs:
           go tool cover -func=coverage.out | grep total | awk '{print "Coverage: "$3}' > coverage.txt
           mkdir -p coverage-badge
           echo "# Coverage Badge" > coverage-badge/README.md
-          cat coverage.txt >>  coverage-badge/README.md
+          echo "\![](badge.svg)" >> coverage-badge/README.md
         shell: bash
 
       - name: Upload Coverage Badge
