@@ -1,4 +1,4 @@
-name: Generate Coverage Badge
+name: Go Test, Coverage, and Badge Generation
 
 on:
   push:
@@ -14,24 +14,38 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
-          go-version: 1.23
+          go-version: '1.23'
 
-      - name: Run Tests
+      - name: Set Environment Variables
+        run: echo "GO111MODULE=on" >> $GITHUB_ENV
+
+      - name: Install Dependencies
+        run: |
+          go mod tidy
+          go mod download
+
+      - name: Run Tests and Generate Coverage
         run: |
           go test -covermode=count -coverprofile=coverage.out $(go list ./... | grep -v cmd/scratch)
 
-      - name: Generate Coverage Badge
+      - name: Display Coverage Report
         run: |
-          mkdir -p coverage-badge
-          echo "# Coverage Badge" > coverage-badge/README.md
-          COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print "Coverage: "$3}' )
+          go tool cover -func=coverage.out
+
+      - name: Generate Coverage Badge
+        id: coverage-badge
+        run: |
+          # Extract the coverage percentage from the coverage.out file
+          COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print substr($3, 1, length($3)-1)}')
+          # Convert the percentage to a number for comparison (e.g., 85.2 -> 85)
           COVERAGE_NUMBER=$(echo $COVERAGE | awk '{print int($1)}')
 
+          # Set badge color based on coverage percentage
           if [ "$COVERAGE_NUMBER" -ge 80 ]; then
             COLOR="brightgreen"
           elif [ "$COVERAGE_NUMBER" -ge 60 ]; then
@@ -40,11 +54,22 @@ jobs:
             COLOR="red"
           fi
 
-          mkdir -p coverage-badge
-          echo "<svg xmlns='http://www.w3.org/2000/svg' width='120' height='20'><rect width='70' height='20' fill='#555'/><rect x='70' width='50' height='20' fill=\"#${COLOR}\"/><text x='35' y='14' fill='#fff' font-family='Verdana' font-size='11'>coverage</text><text x='85' y='14' fill='#fff' font-family='Verdana' font-size='11'>${COVERAGE}%</text></svg>" >> coverage-badge/badge.svg
+          # Generate SVG badge using the extracted coverage
+          echo "<svg xmlns='http://www.w3.org/2000/svg' width='120' height='20'>
+            <rect width='70' height='20' fill='#555'/>
+            <rect x='70' width='50' height='20' fill='#${COLOR}'/>
+            <text x='35' y='14' fill='#fff' font-family='Verdana' font-size='11'>coverage</text>
+            <text x='85' y='14' fill='#fff' font-family='Verdana' font-size='11'>${COVERAGE}%</text>
+          </svg>" > badge.svg
 
-      - name: Upload Coverage Badge
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./coverage-badge
+      - name: Commit Coverage Badge
+        run: |
+          git config --local user.name "GitHub Action"
+          git config --local user.email "action@github.com"
+          mkdir -p badges
+          mv badge.svg badges/coverage.svg
+          git add badges/coverage.svg
+          git commit -m "Update coverage badge"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
