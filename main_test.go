@@ -9,9 +9,9 @@ func Test_add(t *testing.T) {
 		t.Error("got error")
 	}
 
-	c := add(2, 1)
+	d := sub(2, 1)
 
-	if c != 1 {
+	if d != 1 {
 		t.Error("got error")
 	}
 }
