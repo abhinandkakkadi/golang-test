@@ -27,7 +27,6 @@ jobs:
 
       - name: Generate Coverage Badge
         run: |
-          go tool cover -func=coverage.out | grep total | awk '{print "Coverage: "$3}' > coverage.txt
           mkdir -p coverage-badge
           echo "# Coverage Badge" > coverage-badge/README.md
           COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print substr($3, 1, length($3)-1)}')
