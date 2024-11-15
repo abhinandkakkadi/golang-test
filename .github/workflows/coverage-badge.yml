@@ -47,11 +47,11 @@ jobs:
 
           # Set badge color based on coverage percentage
           if [ "$COVERAGE_NUMBER" -ge 80 ]; then
-            COLOR="brightgreen"
+            COLOR="AAFF00"
           elif [ "$COVERAGE_NUMBER" -ge 60 ]; then
-            COLOR="yellow"
+            COLOR="FFC000"
           else
-            COLOR="red"
+            COLOR="FF4433"
           fi
 
           echo "<svg xmlns='http://www.w3.org/2000/svg' width='120' height='20'>
@@ -63,8 +63,8 @@ jobs:
 
       - name: Commit Coverage Badge
         run: |
-          git config --local user.name "GitHub Action"
-          git config --local user.email "action@github.com"
+          git config --local user.name "Vijayanand"
+          git config --local user.email "vijathanga@gmail.com"
           mkdir -p badges
           mv badge.svg badges/coverage.svg
           git add badges/coverage.svg
