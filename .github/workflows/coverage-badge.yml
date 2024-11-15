@@ -1,4 +1,4 @@
-name: Generate Coverage Badge
+name: Go Test and Coverage
 
 on:
   push:
@@ -19,22 +19,27 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: 1.20
+          go-version: '1.20'
 
-      - name: Run Tests
+      - name: Set Environment Variables
+        run: echo "GO111MODULE=on" >> $GITHUB_ENV
+
+      - name: Install Dependencies
+        run: |
+          go mod tidy
+          go mod download
+
+      - name: Run Tests and Generate Coverage
         run: |
           go test -covermode=count -coverprofile=coverage.out $(go list ./... | grep -v cmd/scratch)
 
-      - name: Generate Coverage Badge
+      - name: Display Coverage Report
         run: |
-          go tool cover -func=coverage.out | grep total | awk '{print "Coverage: "$3}' > coverage.txt
-          mkdir -p coverage-badge
-          echo "# Coverage Badge" > coverage-badge/README.md
-          echo "![](badge.svg)" >> coverage-badge/README.md
-        shell: bash
+          go tool cover -func=coverage.out
 
-      - name: Upload Coverage Badge
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Upload Coverage Report
+        if: success()
+        uses: actions/upload-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./coverage-badge
+          name: coverage-report
+          path: coverage.out
